@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Maily Day Archive</title>
+    <style>
+        body {
+            font-family: 'Dotum', sans-serif;
+            background: #e8f5e9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-image: linear-gradient(45deg, #ffffff 25%, transparent 25%),
+                            linear-gradient(-45deg, #ffffff 25%, transparent 25%),
+                            linear-gradient(45deg, transparent 75%, #ffffff 75%),
+                            linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #8bc34a;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(139, 195, 74, 0.2);
+        }
+
+        h1 {
+            color: #2e7d32;
+            border-bottom: 3px solid #8bc34a;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2em;
+            text-shadow: 1px 1px 0 #fff;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f1f8e9;
+            border: 2px solid #c5e1a5;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box {
+            padding: 8px;
+            width: 250px;
+            border: 2px solid #aed581;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #8bc34a;
+            box-shadow: 0 0 5px rgba(139, 195, 74, 0.5);
+        }
+
+        .category-filter {
+            padding: 8px;
+            border: 2px solid #aed581;
+            border-radius: 4px;
+            background: white;
+            color: #33691e;
+            cursor: pointer;
+        }
+
+        .category-filter:focus {
+            outline: none;
+            border-color: #8bc34a;
+        }
+
+        .post-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .post-item {
+            padding: 12px;
+            border-bottom: 1px solid #dcedc8;
+            transition: all 0.3s ease;
+        }
+
+        .post-item:hover {
+            background-color: #f9fbe7;
+            transform: translateX(5px);
+        }
+
+        .post-link {
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-title {
+            font-weight: bold;
+            color: #33691e;
+        }
+
+        .post-title:hover {
+            color: #8bc34a;
+        }
+
+        .post-category {
+            color: white;
+            font-size: 0.9em;
+            background: #8bc34a;
+            padding: 3px 10px;
+            border-radius: 15px;
+            margin-right: 10px;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        .post-date {
+            color: #689f38;
+            font-size: 0.9em;
+        }
+
+        /* 귀여운 아이콘 추가 */
+        .post-title::before {
+            content: "✿";
+            color: #8bc34a;
+            margin-right: 8px;
+        }
+
+        /* 반짝이는 효과 */
+        @keyframes sparkle {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .controls::after {
+            content: "★";
+            position: absolute;
+            right: 10px;
+            animation: sparkle 2s infinite;
+        }
+
+        marquee {
+      background: #8bc34a;
+      color: white;
+      padding: 5px;
+      margin: 10px 0;
+    }
+
+        copyright{
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-align: center; /* 가운데 정렬 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✿ Maily Day Archive ✿</h1>
+        
+        <marquee>★☆ 제 홈페이지에 오신 걸 환영합니다! <a href="./notice/1.html">공지</a>를 꼭 읽어주세요. ☆★</marquee>
+
+        <div class="controls">
+            <input type="text" class="search-box" placeholder="검색어를 입력하세요...">
+            <select class="category-filter">
+                <option value="all">전체 카테고리</option>
+                <option value="essay">에세이</option>
+                <option value="worry">고민</option>
+                <option value="lyrics">가사</option>
+                <option value="travel">여행</option>
+            </select>
+        </div>
+
+        <ul class="post-list" id="postList">
+            <!-- 게시글은 자바스크립트로 동적 생성됩니다 -->
+        </ul>
+
+        <copyright class="copyright"><small>&copy; 2007-2025 Maily Day Archive</small></copyright>
+    </div>
+
+    <script>
+        // 샘플 데이터베이스
+        const posts = [   
+            { id: 1, title: "제발", category: "lyrics", date: "2025-01-15" },
+            { id: 2, title: "음악을 시작한 이유 (1)", category: "essay", date: "2025-01-30" },
+            { id: 3, title: "아무도 힘듬을 몰라서", category: "essay", date: "2025-02-05" },
+            { id: 4, title: "잠들고 싶어…zZ", category: "essay", date: "2025-02-11" },
+            { id: 5, title: "음악을 시작한 이유 (2)", category: "essay", date: "2025-02-11" },
+            { id: 6, title: "내 이유", category: "essay", date: "2025-02-11" },
+            { id: 7, title: "난 도대체 뭘까?", category: "essay", date: "2025-02-13" },
+            { id: 8, title: "내 감정을 보이는 게 두려워", category: "essay", date: "2025-02-13" },
+            { id: 9, title: "수고했어요", category: "essay", date: "2025-02-13" }
+        ];
+
+        // DOM 요소
+        const postList = document.getElementById('postList');
+        const searchBox = document.querySelector('.search-box');
+        const categoryFilter = document.querySelector('.category-filter');
+
+        // 게시글 렌더링 함수
+        function renderPosts(postsToRender) {
+            postList.innerHTML = '';
+            postsToRender.forEach(post => {
+                const li = document.createElement('li');
+                li.className = 'post-item';
+                li.innerHTML = `
+                    <a href="./post/${post.id}.html" class="post-link">
+                        <span class="post-title">${post.title}</span>
+                        <div>
+                            <span class="post-category">${getCategoryName(post.category)}</span>
+                            <span class="post-date">${formatDate(post.date)}</span>
+                        </div>
+                    </a>
+                `;
+                postList.appendChild(li);
+            });
+        }
+
+        // 카테고리 한글 변환
+        function getCategoryName(category) {
+            const categories = {
+                essay: '에세이',
+                worry: '고민',
+                lyrics: '가사',
+                food: '맛집'
+            };
+            return categories[category] || category;
+        }
+
+        // 날짜 포맷팅
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        // 필터링 함수
+        function filterPosts() {
+            const searchTerm = searchBox.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+
+            const filteredPosts = posts.filter(post => {
+                const matchesSearch = post.title.toLowerCase().includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+
+            renderPosts(filteredPosts);
+        }
+
+        // 이벤트 리스너
+        searchBox.addEventListener('input', filterPosts);
+        categoryFilter.addEventListener('change', filterPosts);
+
+        // 초기 렌더링
+        renderPosts(posts);
+    </script>
+</body>
+</html>
