@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Red Velvet Quiz</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --primary-color: #FEA38B;
+            --secondary-color: #ff6b6b;
+            --background-color: #fff5f5;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            margin-bottom: 2rem;
+        }
+
+        .question h3 {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .option {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .option:before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: #fff0f0;
+            border-color: var(--primary-color);
+        }
+
+        .option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .option.selected:before {
+            border-color: white;
+            background: white;
+        }
+
+        .input-answer {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-answer:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .explanation {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.explanation h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.explanation p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+}
+
+.result-header {
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.result-header.correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.result-header.incorrect {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .final-result {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .final-result h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .score-details {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 1rem auto;
+            }
+
+            .quiz-container {
+                padding: 1rem;
+            }
+
+            .option {
+                padding: 0.8rem 1rem 0.8rem 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Red Velvet Quiz</h1>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+        <div class="quiz-container" id="quiz"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "1. 레드벨벳의 데뷔일을 연도 4자리, 월 2자리, 일 2자리 형식으로 입력하시오. (ex. 20190514)",
+                type: "input",
+                answer: "20140801",
+                explanation: "레드벨벳은 2014년 8월 1일 디지털 싱글 '행복 (Happiness)'의 뮤직비디오를 업로드하면서 공식적으로 데뷔했습니다. SM엔터테인먼트는 동년 8월 4일 12시 각종 음악 사이트를 통해 레드벨벳의 디지털 싱글 '행복 (Happiness)'를 공개했으며, 같은 날 KBS2 '뮤직뱅크'에서 첫 공식 데뷔 무대를 선보였습니다."
+            },
+            {
+                question: "2. 레드벨벳의 멤버가 아닌 사람은?",
+                options: ["아이린", "슬기", "웬디", "조이", "예지"],
+                answer: 4,
+                explanation: "레드벨벳에는 예리라는 멤버는 있지만, 예지라는 멤버는 없습니다. "
+            },
+            {
+                question: "3. 다음 곡을 듣고 어느 멤버가 부른 곡인지 맞추시오. (Rookie 미니 앨범에 수록된 마지막 사랑 (Last Love))",
+                options: ["아이린", "슬기", "웬디", "조이", "예리"],
+                answer: 2,
+                explanation: "마지막 사랑 (Last Love)는 웬디의 솔로 곡이었습니다."
+            },
+            {
+                question: "4. 다음 중 멤버와 MBTI가 알맞게 짝지어지지 않은 것을 고르시오.",
+                options: ["아이린 - INFJ", "슬기 - ISFP", "웬디 - ISFP", "조이 - INFP", "예리 - INTP"],
+                answer: 0,
+                explanation: "아이린은 ISFJ로서, 멤버들을 잘 챙기고 다정하고 세심한 모습을 보여줬습니다."
+            },
+            {
+                question: "5. 다음 중 멤버와 올바르게 짝지어지지 않은 것은?",
+                options: ["아이린 - 더블패티", "슬기 - 아이슬기", "웬디 - 영스트리트", "조이 - 동물농장", "예리 - 청담국제고등학교"],
+                answer: 1,
+                explanation: "슬기는 '아이슬기'가 아니라 '하이슬기'라는 유튜브 채널을 운영 중입니다."
+            },
+            {
+                question: "6. 다음 중 앨범명과 타이틀곡이 알맞게 짝지어지지 않은 것은?",
+                options: ["The Velvet - 7월 7일", "The Red - Dumb Dumb", "'The ReVe Festival' Day 2 - 짐살라빔", "The Red Summer - 빨간 맛", "'The ReVe Festival' Finale - Psycho"],
+                answer: 2,
+                explanation: "짐살라빔은 'The ReVe Festival' Day 1의 타이틀곡으로, 'The ReVe Festival' Day 2의 타이틀곡은 음파음파였습니다."
+            },
+            {
+                question: '7. 다음 중 "뿌야"와 관련이 없는 문장을 고르시오.',
+                options: ["Sometimes, You Gotta Be Bold!", "어휴 착한 내 딸아", "우리는 관심도 끊어버렸지 오래", "Just Rock The World!", "Uh 얘가 말한대"],
+                answer: 2,
+                explanation: `"Boo-Ya!"는 행복 도입부의 가사이기 때문에, 3번을 제외한 모든 문장이 데뷔 곡 '행복 (Happiness)'의 가사입니다. 원래 "끊어버렸지"가 아니라 "끊어버린지 오래"가 맞습니다.`
+            },
+            {
+                question: "8. 다음 중 일본어 버전이 없는 곡은?",
+                options: ["Dumb Dumb", "러시안 룰렛", "빨간 맛", "Bad Boy", "이 중에는 없다"],
+                answer: 3,
+                explanation: "Bad Boy는 Summer Magic 앨범에 영어 버전만 수록되었고, 일본어 버전은 발매된 바가 없습니다."
+            },
+            {
+                question: "9. 다음 중 정규 3집 Chill Kill에 없는 곡은?",
+                options: ["Knock Knock (Who's There?)", "One Kiss", "Celebrate", "풍경화", "Will I Ever See You Again?",],
+                answer: 2,
+                explanation: "Celebrate는 'The ReVe Festival 2022 - Birthday'의 마지막 트랙입니다."
+            },
+            {
+                question: "10. 레드벨벳의 첫 번째 유닛은?",
+                options: ["아이린&슬기", "웬디&조이", "슬기&웬디", "아이린&조이", "슬기&예리"],
+                answer: 0,
+                explanation: "레드벨벳의 첫 번째 유닛은 '아이린&슬기'입니다. 대표곡으로는 'Monster'가 있죠."
+            },
+            {
+                question: "11. 다음 중 레드벨벳의 콘서트가 아닌 것은?",
+                options: ["'Red Room'", "'REDMARE'", "'La Rouge'", "'2022 The ReVe Festival : Prologue'", "'R to V'"],
+                answer: 3,
+                explanation: "원래 '2022 The ReVe Festival : Prologue'는 시행될 예정인 공연이었지만, 멤버들의 코로나 확진으로 인해서 무산되어버렸습니다."
+            },
+            {
+                question: "12. 레드벨벳의 공식 팬클럽 이름은?",
+                type: "input",
+                answer: ["ReVeluv", "레베럽"],
+                explanation: "혹시 '러비'라고 적으시진 않으셨나요? 러비는 애칭으로, 정식 명칭은 레베럽입니다."
+            },
+            {
+                question: "13. 다음 중 멤버 간 케미가 아닌 것은?",
+                options: ["모녀즈", "평친즈", "맏내즈", "웬조이", "프렌즈"],
+                answer: 2,
+                explanation: "아이린-슬기의 케미는 맏내즈가 아니라 조상즈입니다. 둘이 연습생을 가장 오래 했기 때문에 조상님이라고 부른다고 하네요."
+            },
+            {
+                question: "14. 레드벨벳의 'Feel My Rhythm'은 어떤 클래식 곡을 샘플링했나요?",
+                options: ["바흐 - G선상의 아리아", "모차르트 - 터키 행진곡", "쇼팽 - 녹턴", "베토벤 - 운명", "차이코프스키 - 호두까기 인형"],
+                answer: 0,
+                explanation: "'Feel My Rhythm'은 G선상의 아리아를 자연스럽게 샘플링해내어 2022년 클래식 샘플링 열풍을 연 장본인으로 평가받습니다."
+            },
+            {
+                question: "15. 다음 중 레드벨벳 멤버들의 본명이 아닌 것은?",
+                options: ["배주현", "최슬기", "손승완", "박수영", "김예림"],
+                answer: 1,
+                explanation: "배주현은 아이린, 손승완은 웬디, 박수영은 조이, 김예림은 예리. 슬기의 본명은 강슬기입니다."
+            },
+            {
+                question: "16. 레드벨벳의 '짐살라빔 (Zimzalabim)' 뮤직비디오에서 멤버들이 탑승한 놀이기구는?",
+                options: ["회전목마", "롤러코스터", "자이로드롭", "범퍼카", "관람차"],
+                answer: 1,
+                explanation: "짐살라빔의 뮤비에서는 롤러코스터와 찻잔밖에 등장하지 않았습니다."
+            },
+            {
+                question: "17. 레드벨벳의 데뷔 무대는 어느 음악 프로그램에서 진행되었나요?",
+                options: ["뮤직뱅크", "음악중심", "인기가요", "M COUNTDOWN", "쇼! 음악중심"],
+                answer: 0,
+                explanation: "2014년 8월 1일 뮤직뱅크를 통해 데뷔했습니다."
+            },
+            {
+                question: "18. 'Power Up'의 후렴구 'Ba-banana Ba-ba-banana-nana'는 몇 번 반복되나요?",
+                options: ["9번", "11번", "12번", "13번", "14번"],
+                answer: 3,
+                explanation: "'Ba-banana Ba-ba-banana-nana'를 세어보면 총 13번 나옵니다."
+            },
+            {
+                question: "19. 각 멤버 별 솔로 '데뷔' 곡으로 알맞은 것은? (SM 스테이션 곡은 데뷔로 치지 않음)",
+                options: ["아이린 - Like A Flower", "슬기 - 28 Reasons", "웬디 - Like Water", "조이 - 안녕 (Hello)", "예리 - 스물에게"],
+                answer: 4,
+                explanation: "스물에게는 SM Station으로 예리는 개같은 3센터때문에 솔로 데뷔도 못했습니다."
+            },
+            {
+                question: "20. '(둘~ 셋!) ________! 안녕하세요, Red Velvet입니다!",
+                type: "input",
+                answer: ["해피니스", "Happiness!", "Happiness", "해피니스!"],
+                explanation: "레드벨벳의 인사말이었습니다. 퀴즈를 즐겨주셔서 감사합니다!"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const quizDiv = document.getElementById('quiz');
+        const progressBar = document.getElementById('progress');
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function displayQuestion() {
+            updateProgress();
+            const question = questions[currentQuestion];
+            let questionHTML = `
+                <div class="question">
+                    <h3>${question.question}</h3>
+            `;
+
+            if (question.type === 'input') {
+                questionHTML += `
+                    <input type="text" class="input-answer" placeholder="답을 입력하세요">
+                `;
+            } else {
+                questionHTML += `<div class="options">`;
+                question.options.forEach((option, index) => {
+                    questionHTML += `
+                        <div class="option" data-index="${index}">
+                            ${option}
+                        </div>
+                    `;
+                });
+                questionHTML += `</div>`;
+            }
+
+            questionHTML += `
+                <button class="submit-btn">제출하기</button>
+                <div class="result"></div>
+            </div>`;
+
+            quizDiv.innerHTML = questionHTML;
+
+            if (question.type === 'input') {
+                document.querySelector('.submit-btn').addEventListener('click', checkInputAnswer);
+            } else {
+                const options = document.querySelectorAll('.option');
+                options.forEach(option => {
+                    option.addEventListener('click', selectOption);
+                });
+                document.querySelector('.submit-btn').addEventListener('click', checkAnswer);
+            }
+        }
+
+        function selectOption(e) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            e.target.classList.add('selected');
+        }
+
+        function checkInputAnswer() {
+    const input = document.querySelector('.input-answer');
+    const userAnswer = input.value.trim();
+    const correctAnswer = questions[currentQuestion].answer;
+    const resultDiv = document.querySelector('.result');
+    const explanation = questions[currentQuestion].explanation;
+
+    let resultHTML = '';
+    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+        resultHTML = `
+            <div class="result-header correct">
+                정답입니다! <i class='fas fa-check'></i>
+            </div>
+        `;
+    } else {
+        resultHTML = `
+            <div class="result-header incorrect">
+                틀렸습니다. 정답은 ${correctAnswer}입니다. <i class='fas fa-times'></i>
+            </div>
+            <div class="explanation">
+                <h4>📝 해설</h4>
+                <p>${explanation}</p>
+            </div>
+        `;
+    }
+    resultDiv.innerHTML = resultHTML;
+    resultDiv.className = "result show";
+    setTimeout(nextQuestion, 4000); // 해설을 읽을 시간을 더 주기 위해 4초로 증가
+}
+
+function checkAnswer() {
+    const selected = document.querySelector('.option.selected');
+    if (!selected) return;
+
+    const selectedIndex = parseInt(selected.dataset.index);
+    const correctAnswer = questions[currentQuestion].answer;
+    const resultDiv = document.querySelector('.result');
+    const explanation = questions[currentQuestion].explanation;
+
+    let resultHTML = '';
+    if (selectedIndex === correctAnswer) {
+        resultHTML = `
+            <div class="result-header correct">
+                정답입니다! <i class='fas fa-check'></i>
+            </div>
+        `;
+    } else {
+        resultHTML = `
+            <div class="result-header incorrect">
+                틀렸습니다. 정답은 "${questions[currentQuestion].options[correctAnswer]}"입니다. <i class='fas fa-times'></i>
+            </div>
+            <div class="explanation">
+                <h4>📝 해설</h4>
+                <p>${explanation}</p>
+            </div>
+        `;
+    }
+    resultDiv.innerHTML = resultHTML;
+    resultDiv.className = "result show";
+    setTimeout(nextQuestion, 4000); // 해설을 읽을 시간을 더 주기 위해 4초로 증가
+}
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                displayQuestion();
+            } else {
+                showFinalResult();
+            }
+        }
+
+        function showFinalResult() {
+            const percentage = (score / questions.length) * 100;
+            let message = '';
+            
+            if (percentage === 100) {
+                message = '완벽해요! 당신은 진정한 ReVeluv입니다! 🏆';
+            } else if (percentage >= 80) {
+                message = '대단해요! Red Velvet에 대해 정말 잘 알고 계시네요! 🌟';
+            } else if (percentage >= 60) {
+                message = '잘 하셨어요! 더 많은 Red Velvet 컨텐츠를 즐겨보세요! 💝';
+            } else if (percentage >= 40) {
+                message = '아쉽네요. 하지만 Red Velvet과 함께라면 더 성장할 수 있어요! 💪';
+            } else {
+                message = 'Red Velvet의 매력에 빠져보세요! 새로운 시작을 응원합니다! 🎉';
+            }
+
+            quizDiv.innerHTML = `
+                <div class="final-result">
+                    <h2>퀴즈 완료!</h2>
+                    <div class="score-details">
+                        <p>총점: ${score}/${questions.length}</p>
+                        <p>정답률: ${percentage.toFixed(1)}%</p>
+                        <p>${message}</p>
+                    </div>
+                    <button class="submit-btn" onclick="restartQuiz()">다시 시작하기</button>
+                </div>
+            `;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            displayQuestion();
+        }
+
+        // Start the quiz
+        displayQuestion();
+    </script>
+</body>
+</html>
